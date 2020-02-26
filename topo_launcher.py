@@ -248,7 +248,7 @@ def generate_flows(n_elephant_flows, n_mice_flows, duration, net, log_dir):
 # Main function
 if __name__ == "__main__":
     # Loading default parameter values
-    log_dir = "/mininet-log/test-"
+    log_dir = "mininet-log/test-"
     topology = LinearTopo()
     default_controller = True
     controller_ip = "127.0.0.1"  # localhost
@@ -259,18 +259,7 @@ if __name__ == "__main__":
 
     # Reading command line arguments
     for arg in sys.argv:
-        if arg.startswith("--controller"):
-            default_controller = False
-            arg = arg[2:]
-            sub_arg = re.split("[,=]", arg)
-            if "ip" in sub_arg:
-                index = sub_arg.index("ip") + 1
-                controller_ip = sub_arg[index]
-            if "port" in sub_arg:
-                index = sub_arg.index("port") + 1
-                controller_port = int(sub_arg[index])
-
-        elif arg.startswith("--topo"):
+        if arg.startswith("--topo"):
             arg = arg[2:]
             sub_arg = re.split("[,=]", arg)
             if sub_arg[1] == "linear":
@@ -286,25 +275,10 @@ if __name__ == "__main__":
             elif sub_arg[1] == "fat_tree":
                 topology = FatTreeTopo()
 
-        elif arg.startswith("--debug"):
-            debug_flag = True
-            if len(arg) > 7:
-                arg = arg[8:]
-                sub_arg = re.split(":", arg)
-                debug_host = sub_arg[0]
-                debug_port = int(sub_arg[1])
-
-            sys.path.append("/home/stainlee/Programs/pycharm-2017.3.3/debug-eggs/pycharm-debug.egg")
-            import pydevd
-
-            # conecting to pycharm debugger
-            pydevd.settrace(debug_host, port=debug_port, stdoutToServer=True, stderrToServer=True)
 
     # Starting program
     setLogLevel('info')
 
-    # creating log directory
-    log_dir = path.expanduser('~') + log_dir
     i = 1
     while True:
         if not path.exists(log_dir + str(i)):
@@ -313,14 +287,14 @@ if __name__ == "__main__":
             break
         i = i+1
 
-    # starting mininet
-    if default_controller:
-        net = Mininet(topo=topology, controller=DefaultController, host=CPULimitedHost, link=TCLink,
+    controller_port = 6633
+
+    net = Mininet(topo=topology, controller=None, host=CPULimitedHost, link=TCLink,
                       switch=OVSSwitch, autoSetMacs=True)
-    else:
-        net = Mininet(topo=topology, controller=None, host=CPULimitedHost, link=TCLink,
-                      switch=OVSSwitch, autoSetMacs=True)
-        net.addController('c1', controller=RemoteController, ip=controller_ip, port=controller_port)
+    net.addController('c1', controller=RemoteController, ip=172.17.0.5, port=controller_port)
+    net.addController('c2', controller=RemoteController, ip=172.17.0.6, port=controller_port)
+    net.addController('c3', controller=RemoteController, ip=172.17.0.7, port=controller_port)
+
 
     net.start()
 
