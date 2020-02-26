@@ -15,7 +15,7 @@ from mesh import MeshTopo
 from fat_tree_topo import FatTreeTopo
 
 from os import path
-from os import mkdir
+from os import mkdir, makedirs
 import random
 import time
 import sys
@@ -173,7 +173,7 @@ def generate_flows(n_elephant_flows, n_mice_flows, duration, net, log_dir):
     """
 
     if not path.exists(log_dir):
-        mkdir(log_dir)
+        makedirs(log_dir)
 
     n_total_flows = n_elephant_flows + n_mice_flows
     interval = duration / n_total_flows
@@ -248,7 +248,7 @@ def generate_flows(n_elephant_flows, n_mice_flows, duration, net, log_dir):
 # Main function
 if __name__ == "__main__":
     # Loading default parameter values
-    log_dir = "/Desktop/mininet-log/test-"
+    log_dir = "/mininet-log/test-"
     topology = LinearTopo()
     default_controller = True
     controller_ip = "127.0.0.1"  # localhost
